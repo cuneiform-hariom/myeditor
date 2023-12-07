@@ -1,11 +1,11 @@
 .container{
-    max-width: 1200px;
-    margin: auto;
+    max-width: 1200;
     padding: 20px;
 }
 
 .container .options{
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
 }
 
@@ -18,3 +18,7 @@
     padding: 10px;
     line-height: 1.3em;
 }
+
+/* .link-tooltip{
+    position: absolute !important;
+} */
