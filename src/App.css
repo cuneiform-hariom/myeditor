@@ -22,3 +22,7 @@
 /* .link-tooltip{
     position: absolute !important;
 } */
+
+.options button.active {
+    background-color: #e6e6e6; 
+}

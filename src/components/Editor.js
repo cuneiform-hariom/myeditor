@@ -111,7 +111,6 @@ const Editor = () => {
 
     const handleLinkClick = (event) => {
         const target = event.target;
-        console.log('target: ', target);
         if (target.tagName.toLowerCase() === 'a') {
             setLinkUrl(target.href);
             setIsEditingLink(true);
@@ -123,21 +122,21 @@ const Editor = () => {
 
     const handleLinkHover = (url) => {
         setHoveredLink(url);
-        console.log('url: ', url);
     };
 
     const removeLink = () => {
-        const selection = window.getSelection();
-        const range = selection.getRangeAt(0);
-        const link = range.commonAncestorContainer.parentNode;
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    const link = range.commonAncestorContainer.parentNode;
 
-        if (link.tagName.toLowerCase() === 'a') {
-            const contents = range.extractContents();
-            link.parentNode.replaceChild(contents, link);
-        }
+    if (link.tagName.toLowerCase() === 'a') {
+        const contents = link.innerHTML;
+        const parent = link.parentNode;
+        parent.replaceChild(document.createTextNode(contents), link);
+    }
 
-        setIsEditingLink(false);
-    };
+    setIsEditingLink(false);
+};
 
     const renderLinkTooltip = () => {
         return hoveredLink && (
@@ -183,7 +182,6 @@ const Editor = () => {
                         <button onClick={() => handleFormat('ul')}>Unordered List</button>
                         <button onClick={() => handleFormat('ol')}>Ordered List</button>
                         <button onClick={() => handleFormat('link')}>Link</button>
-                        
                     </div>
                     <div
                         className='textarea'
@@ -194,6 +192,10 @@ const Editor = () => {
                         onClick={(event) => handleLinkHover(event.target.href)}
                     />
                     {renderLinkTooltip()}
+                    <div
+                        className='textarea'
+                        contentEditable="true"
+                    />
                 </div>
             </div>
         </>
