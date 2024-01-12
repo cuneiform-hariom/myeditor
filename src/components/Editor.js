@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import '../App.css';
 
 const Editor = () => {
-    const initialText = '';
+    const initialText = 'Good Morning';
 
     const [editorText, setEditorText] = useState(initialText);
     const [linkUrl, setLinkUrl] = useState('');
@@ -10,6 +10,8 @@ const Editor = () => {
     const [hoveredLink, setHoveredLink] = useState(null);
 
     const editorRef = useRef(null);
+
+    const [selectedColor, setSelectedColor] = useState('')
 
     useEffect(() => {
         const editor = editorRef.current;
@@ -70,6 +72,16 @@ const Editor = () => {
         }
     };
 
+    // const handleColor = (color) => {
+    //     setSelectedColor(color);
+    //     const selection = window.getSelection();
+    //     const range = selection.getRangeAt(0);
+    //     const span = document.createElement('span');
+    //     span.style.color = color;
+    //     span.appendChild(range.extractContents());
+    //     range.insertNode(span);
+    // };
+
     const handleListFormat = (format) => {
         const selection = window.getSelection();
         const range = selection.getRangeAt(0);
@@ -93,10 +105,10 @@ const Editor = () => {
     const applyLinkToSelection = (url) => {
         // Check if the URL is an absolute URL
         const isAbsoluteUrl = /^(https?|ftp):\/\//i.test(url);
-    
+
         // If not an absolute URL, convert it to an absolute URL
         const absoluteUrl = isAbsoluteUrl ? url : `http://${url}`;
-    
+
         const selection = window.getSelection();
         const range = selection.getRangeAt(0);
         const link = document.createElement('a');
@@ -104,7 +116,7 @@ const Editor = () => {
         link.appendChild(range.extractContents());
         range.deleteContents();
         range.insertNode(link);
-    
+
         setLinkUrl(absoluteUrl);
         setIsEditingLink(true);
     };
@@ -125,18 +137,18 @@ const Editor = () => {
     };
 
     const removeLink = () => {
-    const selection = window.getSelection();
-    const range = selection.getRangeAt(0);
-    const link = range.commonAncestorContainer.parentNode;
+        const selection = window.getSelection();
+        const range = selection.getRangeAt(0);
+        const link = range.commonAncestorContainer.parentNode;
 
-    if (link.tagName.toLowerCase() === 'a') {
-        const contents = link.innerHTML;
-        const parent = link.parentNode;
-        parent.replaceChild(document.createTextNode(contents), link);
-    }
+        if (link.tagName.toLowerCase() === 'a') {
+            const contents = link.innerHTML;
+            const parent = link.parentNode;
+            parent.replaceChild(document.createTextNode(contents), link);
+        }
 
-    setIsEditingLink(false);
-};
+        setIsEditingLink(false);
+    };
 
     const renderLinkTooltip = () => {
         return hoveredLink && (
@@ -155,19 +167,15 @@ const Editor = () => {
         if (newUrl) {
             const selection = window.getSelection();
             const range = selection.getRangeAt(0);
-    
+
             const link = range.commonAncestorContainer.parentNode;
-    
+
             if (link.tagName.toLowerCase() === 'a') {
                 link.href = newUrl;
             }
-    
+
             setIsEditingLink(false);
         }
-    };
-
-    const handleChange = () => {
-        console.log(editorText);
     };
 
     return (
@@ -182,20 +190,25 @@ const Editor = () => {
                         <button onClick={() => handleFormat('ul')}>Unordered List</button>
                         <button onClick={() => handleFormat('ol')}>Ordered List</button>
                         <button onClick={() => handleFormat('link')}>Link</button>
+                        <button></button>
                     </div>
                     <div
                         className='textarea'
                         ref={editorRef}
                         contentEditable="true"
                         dangerouslySetInnerHTML={{ __html: initialText }}
-                        onInput={handleChange}
                         onClick={(event) => handleLinkHover(event.target.href)}
-                    />
+                        role='textbox'
+                        aria-multiline="true"
+                    >
+                    </div>
                     {renderLinkTooltip()}
-                    <div
-                        className='textarea'
-                        contentEditable="true"
-                    />
+
+                    <div className="textarea">
+                        {editorText}
+                        
+                    </div>
+
                 </div>
             </div>
         </>
