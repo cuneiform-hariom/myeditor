@@ -5,13 +5,11 @@ const Editor = () => {
     const initialText = 'Good Morning';
 
     const [editorText, setEditorText] = useState(initialText);
-    const [linkUrl, setLinkUrl] = useState('');
     const [isEditingLink, setIsEditingLink] = useState(false);
     const [hoveredLink, setHoveredLink] = useState(null);
 
     const editorRef = useRef(null);
-
-    const [selectedColor, setSelectedColor] = useState('')
+    const [selectedColor, setSelectedColor] = useState('black')
 
     useEffect(() => {
         const editor = editorRef.current;
@@ -24,7 +22,7 @@ const Editor = () => {
         }
     }, []);
 
-    const handleFormat = (format, value) => {
+    const handleFormat = (format) => {
         const selection = window.getSelection();
 
         if (format === 'link') {
@@ -72,15 +70,29 @@ const Editor = () => {
         }
     };
 
-    // const handleColor = (color) => {
-    //     setSelectedColor(color);
-    //     const selection = window.getSelection();
-    //     const range = selection.getRangeAt(0);
-    //     const span = document.createElement('span');
-    //     span.style.color = color;
-    //     span.appendChild(range.extractContents());
-    //     range.insertNode(span);
-    // };
+    useEffect(() => {
+        changeColor()
+    }, [selectedColor])
+
+
+    const changeColor = () => {
+        const selection = window.getSelection();
+        if (selection && selection.toString().trim() !== '') {
+            const range = selection.getRangeAt(0);
+            const currentTag = range.commonAncestorContainer.parentNode.tagName.toLowerCase();
+            const containsTag = currentTag === 'span';
+            if (containsTag) {
+                range.commonAncestorContainer.parentNode.style.color = selectedColor
+            } else {
+                const span = document.createElement('span');
+                span.style.color = selectedColor;
+                span.appendChild(document.createTextNode(range.toString()));
+                range.deleteContents();
+                range.insertNode(span);
+            }
+        }
+    };
+
 
     const handleListFormat = (format) => {
         const selection = window.getSelection();
@@ -116,15 +128,12 @@ const Editor = () => {
         link.appendChild(range.extractContents());
         range.deleteContents();
         range.insertNode(link);
-
-        setLinkUrl(absoluteUrl);
         setIsEditingLink(true);
     };
 
     const handleLinkClick = (event) => {
         const target = event.target;
         if (target.tagName.toLowerCase() === 'a') {
-            setLinkUrl(target.href);
             setIsEditingLink(true);
             setHoveredLink(null); // Reset hovered link when clicking on the link
         } else {
@@ -190,7 +199,13 @@ const Editor = () => {
                         <button onClick={() => handleFormat('ul')}>Unordered List</button>
                         <button onClick={() => handleFormat('ol')}>Ordered List</button>
                         <button onClick={() => handleFormat('link')}>Link</button>
-                        <button></button>
+                        <input
+                            type="color"
+                            name=""
+                            id=""
+                            onChange={(e) => setSelectedColor(e.target.value)}
+                        />
+                        
                     </div>
                     <div
                         className='textarea'
@@ -204,10 +219,11 @@ const Editor = () => {
                     </div>
                     {renderLinkTooltip()}
 
-                    <div className="textarea">
-                        {editorText}
-                        
-                    </div>
+                    <pre className="textarea prevarea">
+                        <code>
+                            {editorText}
+                        </code>
+                    </pre>
 
                 </div>
             </div>
